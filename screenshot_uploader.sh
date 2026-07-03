@@ -48,11 +48,25 @@ echo ""
 
 # Monitor Screenshots folder for new native macOS screenshot files
 # (e.g. "Screenshot 2026-07-03 at 3.45.12 PM.png" or the older
-# "Screen Shot 2026-07-03 at 3.45.12 PM.png" naming)
-/opt/homebrew/bin/fswatch -0 --event Created --event Updated --event MovedTo "$LOCAL_SCREENSHOTS" 2>/dev/null | while read -d "" event; do
+# "Screen Shot 2026-07-03 at 3.45.12 PM.png" naming). We watch all fswatch
+# event types (not just Created/Updated/MovedTo) because macOS's screenshot
+# writer uses an atomic write-then-rename that doesn't reliably match those.
+last_file=""
+last_time=0
+/opt/homebrew/bin/fswatch -0 "$LOCAL_SCREENSHOTS" 2>/dev/null | while read -d "" event; do
     # Check if the new file matches macOS's default screenshot naming
     if [[ "$(basename "$event")" =~ ^(Screen\ Shot|Screenshot)\ .*\.png$ ]]; then
         filename=$(basename "$event")
+
+        # Debounce: the broad event watch can fire multiple times for one
+        # file (create, rename, attribute change); skip repeats within 3s
+        now=$SECONDS
+        if [[ "$filename" == "$last_file" && $((now - last_time)) -lt 3 ]]; then
+            continue
+        fi
+        last_file="$filename"
+        last_time=$now
+
         echo "📸 New screenshot detected: $filename"
         
         # Wait a moment for file to be completely written
