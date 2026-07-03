@@ -46,10 +46,12 @@ echo "🗑️  Auto-delete: $AUTO_DELETE"
 echo "⏹️  Press Ctrl+C to stop"
 echo ""
 
-# Monitor Screenshots folder for new SCR-*.png files
+# Monitor Screenshots folder for new native macOS screenshot files
+# (e.g. "Screenshot 2026-07-03 at 3.45.12 PM.png" or the older
+# "Screen Shot 2026-07-03 at 3.45.12 PM.png" naming)
 /opt/homebrew/bin/fswatch -0 --event Created --event Updated --event MovedTo "$LOCAL_SCREENSHOTS" 2>/dev/null | while read -d "" event; do
-    # Check if the new file matches SCR-*.png pattern
-    if [[ "$event" =~ SCR-[0-9]{8}-[a-z]{4}\.png$ ]]; then
+    # Check if the new file matches macOS's default screenshot naming
+    if [[ "$(basename "$event")" =~ ^(Screen\ Shot|Screenshot)\ .*\.png$ ]]; then
         filename=$(basename "$event")
         echo "📸 New screenshot detected: $filename"
         

@@ -48,7 +48,7 @@ if [ -f /tmp/screenshot-uploader.log ]; then
         if echo "$line" | grep -q "Upload successful"; then
             echo "  ✅ Uploaded | size=12"
         elif echo "$line" | grep -q "detected"; then
-            filename=$(echo "$line" | grep -oE "SCR-[0-9]{8}-[a-z]{4}\.png" || echo "file")
+            filename=$(echo "$line" | grep -oE "(Screen Shot|Screenshot) .*\.png" || echo "file")
             echo "  📸 $filename | size=12"
         fi
     done | head -3

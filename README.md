@@ -131,7 +131,7 @@ AUTO_DELETE="false"                # Delete local files after upload
 Example:
 ```
 You: Can you look at this screenshot?
-You: /tmp/screenshots/SCR-20250910-abcd.png
+You: /tmp/screenshots/Screenshot 2026-07-03 at 3.45.12 PM.png
 Claude: [Views and analyzes the image]
 ```
 
@@ -233,7 +233,7 @@ If you see "Operation not permitted":
 
 ## 📝 How It Works
 
-1. **File Monitoring**: Uses `fswatch` to monitor the Screenshots directory for new files matching the pattern `SCR-*.png`
+1. **File Monitoring**: Uses `fswatch` to monitor the Screenshots directory for new files matching macOS's default screenshot naming (`Screenshot ....png` / `Screen Shot ....png`)
 
 2. **Automatic Upload**: When a new screenshot is detected, it's immediately uploaded via `rsync` over SSH
 
